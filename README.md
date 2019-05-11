@@ -1,6 +1,6 @@
 # popgenome-metacentrum
 
-###### Miscellaneous scripts dealing with various problems of population genomics.
+**Miscellaneous scripts dealing with various problems of population genomics.**
 
 ## ROH_bcftools.sh 
 Filter vcf and extract runs of homozygosity with bcftools
