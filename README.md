@@ -67,7 +67,7 @@ In-house polarisation python script `polarize_phased.py` needs a specific polari
 Another input is genetic map from which genetic distances are inferred for each site in vcf by [predictGMAP](https://github.com/szpiech/predictGMAP)
 The vcf has to be also split by population and population map must be supplied.
 
-##selscan.sh
+## selscan.sh
 **Identify sites under selection by selscan**
 Just a wrapper of [selscan](https://github.com/szpiech/selscan)
 Example of qsub command to run this:
