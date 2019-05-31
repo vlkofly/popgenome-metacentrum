@@ -30,10 +30,49 @@ The ROH file must be parsed with in order to contain only regions with `grep RG 
 `Rscript ROH.rg`
 
 ## msmc0_split_scaff_depth_filt.sh
-**Prepare vcf for msmc analysis - split scaffolds and filter**
+**Prepare multihetsep for msmc analysis from vcf - split scaffolds and filter missingness**
+This program wraps steps that are necessary to take before running msmc on data that are originally in vcf format.
+Input vcf must contain both snps and invariant sites because the script uses [vcfAllSiteParser.py](https://github.com/stschiff/msmc-tools)
 
 ## msmc2_msmc.sh
 **Run msmc**
 [Using code developed by Stephan Schiffels](https://github.com/stschiff/msmc2)
 ## msmc3_plot.R
 **Plot msmc results**
+
+## shapeit.sh
+**Phase vcf by shapeit**
+
+Phasing of vcf = linking snps into haplotypes A/C ---> A|C 
+It makes use of reads aligned to reference that contain two snps of known phase = PIR = **P**hase **I**nformative **R**eads
+The method is implemented in program [shapeit.v2](https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html) developed by O. Delaneau.
+My script only wraps up the program commands and facilitates the analysis.   
+
+Example of qsub command to run this script for multiple chromosomes defined in chrlist.txt:
+
+`parallel -a chrlist.txt "qsub -v 'vcf=snp_gala.masked.mindp7.0.75missing.vcf.gz,scf={},outdir=shapeit_result' -N shapeit.{} ~/scripts/shapeit.sh"`
+
+There are again inscript variables that need to be modified to match your situation. So read the script and try to understand what does it do before you run it ;).
+Particularly it needs following resources:
+- genetic map (variable recrate)
+- list of sample names with corresponding full path to bam alignment (a2th2_01       /storage/plzen1/home/vlkofly/rgadd2/a2th2_01.final.bam)
+- program binaries
+
+## prepare_selscan.sh
+**Polarize phased vcf and create genetic map**
+This script takes phased vcf from shapeit and returns polarised vcf split by population that will go as an input to selscan.
+Example of qsub command to run this:
+`qsub -v 'vcf=shapeit_result/scaffold_1.phased.vcf.gz,scf=1' ~/scripts/prepare_selscan.sh`
+In-house polarisation python script `polarize_phased.py` needs a specific polarisation key - a list of sites.
+Another input is genetic map from which genetic distances are inferred for each site in vcf by [predictGMAP](https://github.com/szpiech/predictGMAP)
+The vcf has to be also split by population and population map must be supplied.
+
+##selscan.sh
+**Identify sites under selection by selscan**
+Just a wrapper of [selscan](https://github.com/szpiech/selscan)
+Example of qsub command to run this:
+qsub -v 'vcf=scaffold_2.phased.DRG.vcf' ~/scripts/selscan.sh
+
+
+
+
