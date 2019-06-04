@@ -74,5 +74,5 @@ Example of qsub command to run this:
 qsub -v 'vcf=scaffold_2.phased.DRG.vcf' ~/scripts/selscan.sh
 
 
-
+## run_twisst.sh
 
