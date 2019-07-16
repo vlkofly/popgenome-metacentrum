@@ -75,4 +75,28 @@ qsub -v 'vcf=scaffold_2.phased.DRG.vcf' ~/scripts/selscan.sh
 
 
 ## run_twisst.sh
+**Topology weighting by Simon Martin's program**
 
+### polarisation pipeline follows:
+## lastz.sh
+**Align two genomes by lastz**
+
+## multiz.sh
+**TBA pipeline for alignemnt of multiple genomes from pairwise alignments**
+
+## polarisation3_est_sfs.sh
+**Polarize vcf based on multiple genome alignemnt**
+
+## plot_polarisation.R
+**filter MAF and check polarisation**
+## polarise_unphased.py
+
+## get_ancestral.py
+
+### two scripts to analyze vcf by program snprelate
+## runSnprelate2.sh
+**bash wrapper for script snp_pca.R**
+qsub -v 'vcf=mocker_to_toxo_snps_fin.vcf.passed.gz' runSnprelate2.sh
+many filtering options need to be modified inscript
+## snp_pca.R
+[SNPRelate](https://bioconductor.org/packages/release/bioc/html/SNPRelate.html) rscript
