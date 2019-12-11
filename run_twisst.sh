@@ -43,7 +43,9 @@ cp /storage/brno3-cerit/home/vlkofly/mockingbird_genomics/programs/twisst/plot_t
 
 
 
-
+#pop="S P M F" # in the case of subsetting 
+#pop="I S P M F" # in the case of subsetting 
+pop="F C S I" # in the case of subsetting 
 parsevcf=`basename $parsevcf`
 phyml=`basename $phyml`
 twisst=`basename $twisst`
@@ -67,11 +69,20 @@ ls
 #python $phyml --phyml $phyml_bin -p $base -g $geno -T $nt --windType sites --verbose --windSize 100  -Mi 50  --tmp . --model GTR --log ${base}.phyml.log #the size is in bp so you have to play with --verbose 
 #--outgroup C_270_A
 
-#do the analysis only for a subset of individuals DWI
+#do the analysis only for a subset of individuals
 #--outgroup F_272,F_280,F_276
+
+#generate list of individuals in the subset population
+list=`for x in $pop; do grep $x gala.groups.txt ; done | sed 's/_[AB].*$//g'| uniq | paste - - - - - - - - - - - - -d","` # for 4 populations 
+#list=`for x in $pop; do grep $x gala.groups.txt ; done | sed 's/_[AB].*$//g'| uniq | paste - - - - - - - - - - - - - - - -d","` # for 5 populations
+
+gr=$(for x in $pop; do e=`grep $x gala.groups.txt | cut -f 1 | paste - - - - - - -d","` ;printf ".-g %s %s\n" $x $e ; done | tr "." " " | paste - - - - -d "") # automatic subset list generation 4 pop
+#gr=$(for x in $pop; do e=`grep $x gala.groups.txt | cut -f 1 | paste - - - - - - -d","` ;printf ".-g %s %s\n" $x $e ; done | tr "." " " | paste - - - - - -d "") # automatic subset list generation 5 pop
+	
 python $phyml --phyml $phyml_bin -p $base -g $geno -T $nt --windType sites  \
        --verbose --windSize 100  -Mi 50  --tmp . --model GTR --log ${base}.phyml.log \
-       --individuals F_272,F_280,F_276,I_364,I_370,I_380,W_025,W_001,W_009,D_001,D_002,D_013
+       --individuals $list
+       #--individuals F_272,F_280,F_276,I_364,I_370,I_380,W_025,W_001,W_009,D_001,D_002,D_013
 
 echo "phyml finished at `date`"
 # run twisst
@@ -80,7 +91,10 @@ echo "phyml finished at `date`"
 #gr="-g I I_364_A,I_364_B,I_370_A,I_370_B,I_380_A,I_380_B -g D D_001_A,D_001_B,D_002_A,D_002_B,D_013_A,D_013_B -g W W_001_A,W_001_B,W_009_A,W_009_B,W_025_A,W_025_B -g M M_182_A,M_182_B,M_192_A,M_192_B,M_208_A,M_208_B -g P P_001_A,P_001_B,P_016_A,P_016_B,P_017_A,P_017_B -g S S_001_A,S_001_B,S_005_A,S_005_B,S_140_A,S_140_B -g C C_254_A,C_254_B,C_256_A,C_256_B,C_270_A,C_270_B -g F F_272_A,F_272_B,F_276_A,F_276_B,F_280_A,F_280_B "
 
 #for subset
-gr="-g I I_364_A,I_364_B,I_370_A,I_370_B,I_380_A,I_380_B -g D D_001_A,D_001_B,D_002_A,D_002_B,D_013_A,D_013_B -g W W_001_A,W_001_B,W_009_A,W_009_B,W_025_A,W_025_B -g F F_272_A,F_272_B,F_276_A,F_276_B,F_280_A,F_280_B "
+#gr="-g I I_364_A,I_364_B,I_370_A,I_370_B,I_380_A,I_380_B -g D D_001_A,D_001_B,D_002_A,D_002_B,D_013_A,D_013_B -g W W_001_A,W_001_B,W_009_A,W_009_B,W_025_A,W_025_B -g F F_272_A,F_272_B,F_276_A,F_276_B,F_280_A,F_280_B "
+
+# automatic subset list generation
+
 
 #python $twisst --threads $nt -t ${base}.trees.gz -w ${base}.weights.csv.gz --outgroup C_270_A --outputTopos ${base}.topologies.trees -g C -g D -g W -g F -g I -g M -g P -g S --method fixed --groupsFile $groups 
 python $twisst --threads $nt -t ${base}.trees.gz -w ${base}.weights.csv.gz $gr --method complete  
